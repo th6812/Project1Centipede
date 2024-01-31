@@ -1,4 +1,9 @@
-Spider: 187,144,252
+Spider1: 187,144,252
+Spider2: 110, 156, 66
 Green line: 110,156,66
-Mushrooms & elf: 181,83,40
-Centipede: 184,70,162
+Blue line: 66, 114, 194
+Mushrooms & elf 1: 181,83,40
+Mushrooms & elf 2: 45, 50, 184
+Centipede 1: 184,70,162
+Centipede 2: 184, 50, 50
+Score: 188, 144, 252
