@@ -1,0 +1,4 @@
+Spider: 187,144,252
+Green line: 110,156,66
+Mushrooms & elf: 181,83,40
+Centipede: 184,70,162
