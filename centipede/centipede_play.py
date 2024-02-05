@@ -2,11 +2,14 @@ import argparse
 import sys
 import pdb
 import gymnasium as gym
-from gymnasium import wrappers, logger
 import numpy as np
+from gymnasium import wrappers, logger
+import matplotlib.pyplot as plt
+
 
 class Agent(object):
     """The world's simplest agent!"""
+
     def __init__(self, action_space):
         self.action_space = action_space
 
@@ -34,7 +37,7 @@ class Agent(object):
         locations = [x for x in result]
         # print(locations)
         # Sweep through each column and go row by row down to check the largest continuous set of pink pixels.
-        longest_seq = self.longest_seq_color(locations)
+        # longest_seq = self.longest_seq_color(locations)
         # Find the largest labeled region
 
         """
@@ -63,7 +66,7 @@ class Agent(object):
         counter = 1
         for i in range(210):
             for j in range(160):
-                if mask[i, j] is True and markers[i, j] == 0:
+                if mask[i, j] == True and markers[i, j] == 0:
                     self.depth_first_search(i, j, counter, mask, markers)
                     counter += 1
         # Find the largest region region
@@ -81,6 +84,8 @@ class Agent(object):
             markers[row, col] = counter
             for i, j in ((row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)):
                 self.depth_first_search(i, j, counter, mask, markers)
+
+
 ## YOU MAY NOT MODIFY ANYTHING BELOW THIS LINE OR USE
 ## ANOTHER MAIN PROGRAM
 if __name__ == '__main__':
@@ -100,7 +105,6 @@ if __name__ == '__main__':
     # like: tempfile.mkdtemp().
     outdir = 'random-agent-results'
 
-
     env.unwrapped.seed(0)
     agent = Agent(env.action_space)
 
@@ -111,16 +115,14 @@ if __name__ == '__main__':
     special_data = {}
     special_data['ale.lives'] = 3
     observation = env.reset()[0]
-    
 
     while not terminated:
-        
         action = agent.act(observation, reward, terminated)
         observation, reward, terminated, truncated, info = env.step(action)
-        #pdb.set_trace()
+        # pdb.set_trace()
         score += reward
         env.render()
-     
+
     # Close the env and write monitor result info to disk
-    print ("Your score: %d" % score)
+    print("Your score: %d" % score)
     env.close()
