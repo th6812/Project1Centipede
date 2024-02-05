@@ -3,6 +3,7 @@ import sys
 import pdb
 import gymnasium as gym
 from gymnasium import wrappers, logger
+import numpy as np
 
 class Agent(object):
     """The world's simplest agent!"""
@@ -26,8 +27,60 @@ class Agent(object):
             See the Actions table at:
             https://gymnasium.farama.org/environments/atari/centipede/
         """
+        new_array = observation.reshape((observation.shape[0] * observation.shape[1], 3))
+        var = {tuple(x) for x in new_array}
+        # target_col = [184, 70, 162]
+        result = zip(*np.where(observation == [181, 83, 40])[:2])
+        locations = [x for x in result]
+        # print(locations)
+        # Sweep through each column and go row by row down to check the largest continuous set of pink pixels.
+        longest_seq = self.longest_seq_color(locations)
+        # Find the largest labeled region
+
+        """
+        TEST - got the right elf from the colors
+
+        # Plot the original image
+        plt.subplot(1, 2, 1)
+        plt.imshow(observation)
+        plt.title('Original Image')
+
+        # Plot the largest connected region
+        plt.subplot(1, 2, 2)
+        plt.imshow(longest_seq)
+        plt.title('Largest Connected Region')
+
+        plt.show()
+        """
+
         return self.action_space.sample()
 
+    def longest_seq_color(self, locations):
+        mask = np.zeros((210, 160), dtype=bool)
+        for row, col in locations:
+            mask[row, col] = True
+        markers = np.zeros_like(mask, dtype=int)
+        counter = 1
+        for i in range(210):
+            for j in range(160):
+                if mask[i, j] is True and markers[i, j] == 0:
+                    self.depth_first_search(i, j, counter, mask, markers)
+                    counter += 1
+        # Find the largest region region
+        unique_markers, marker_counter = np.unique(markers, return_counts=True)
+        # sliced off the zero and then added 1 to compensate for sliced index.
+        largest_marker = unique_markers[np.argmax(marker_counter[1:]) + 1]
+
+        # Creating a mask to match largest marker
+        largest_connected_region = np.zeros_like(observation)
+        largest_connected_region[markers == largest_marker] = observation[markers == largest_marker]
+        return largest_connected_region
+
+    def depth_first_search(self, row, col, counter, mask, markers):
+        if mask[row, col] == True and markers[row, col] == 0 and (0 <= row < 210) and (0 <= col < 160):
+            markers[row, col] = counter
+            for i, j in ((row - 1, col), (row + 1, col), (row, col - 1), (row, col + 1)):
+                self.depth_first_search(i, j, counter, mask, markers)
 ## YOU MAY NOT MODIFY ANYTHING BELOW THIS LINE OR USE
 ## ANOTHER MAIN PROGRAM
 if __name__ == '__main__':
