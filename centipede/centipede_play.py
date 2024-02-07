@@ -11,24 +11,25 @@ class Agent(object):
 
     """The world's simplest agent!"""
     action_number = 0
-    elf_color1 = [181, 83, 40]
-    elf_color2 = [45, 50, 184]
-    elf_possible_colors = [elf_color1, elf_color2]
-    centipede_color1 = [184, 70, 162]
-    centipede_color2 = [184, 50, 50]
-    centipede_possible_colors = [centipede_color1, centipede_color2]
+    elf_possible_colors = {
+        "level1": (181, 83, 40),
+        "level2": (45, 50, 184)
+    }
+    centipede_possible_colors = {
+        "level1": (184, 70, 162),
+        "level2": (184, 50, 50)
+    }
 
     def __init__(self, action_space):
         self.action_space = action_space
 
-    def get_location(self, img, colors):
-        for color in colors:
-            result = zip(*np.where(img == color)[:2])
-            locations = [x for x in result]
-            if locations:
-                return locations[3]
-            else:
-                return None
+    def get_location(self, img, color):
+        result = zip(*np.where(img == color)[:2])
+        locations = [x for x in result]
+        if locations:
+            return locations[3]
+        else:
+            return None
 
 
     # You should modify this function
@@ -50,19 +51,30 @@ class Agent(object):
         """
         new_array = observation.reshape((observation.shape[0] * observation.shape[1], 3))
         var = {tuple(x) for x in new_array}
+        elf_color = None
+        centipede_color = None
+        if self.elf_possible_colors.get("level1") in var:
+            elf_color = self.elf_possible_colors.get("level1")
+            centipede_color = self.centipede_possible_colors.get("level1")
+        else:
+            elf_color = self.elf_possible_colors.get("level2")
+            centipede_color = self.centipede_possible_colors.get("level2")
         target_col = (184, 70, 162)
         longest_seq_cent = None
-        result2 = zip(*np.where(observation == [181, 83, 40])[:2])
-        locations2 = [x for x in result2]
-        if not locations2: 
+        elf_locations = None
+        result2 = zip(*np.where(observation == elf_color)[:2])
+        elf_locations = [x for x in result2]
+        if not elf_locations: 
             return 0
-        longest_seq_elf = self.longest_seq_color(locations2)
-        if target_col in var:
-            result = zip(*np.where(observation == [184, 70, 162])[:2])
-            locations = [x for x in result]
-            longest_seq_cent = self.longest_seq_color(locations)
-        centipede_location = self.get_location(longest_seq_cent, self.centipede_possible_colors)
-        elf_location = self.get_location(longest_seq_elf, self.elf_possible_colors,)
+        longest_seq_elf = self.longest_seq_color(elf_locations)
+        result = zip(*np.where(observation == centipede_color)[:2])
+        centipede_locations = list(result)
+        if not centipede_locations:
+            return 0
+        longest_seq_cent = self.longest_seq_color(centipede_locations)
+
+        centipede_location = self.get_location(longest_seq_cent, centipede_color)
+        elf_location = self.get_location(longest_seq_elf, elf_color)
         offset = 0
 
         self.action_number += 1
@@ -78,8 +90,6 @@ class Agent(object):
         else:
             return 3 # return action number for moving right
 
-
-        # return self.action_space.sample()
 
     def longest_seq_color(self, locations):
         mask = np.zeros((210, 160), dtype=bool)
