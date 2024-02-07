@@ -8,10 +8,29 @@ import matplotlib.pyplot as plt
 
 
 class Agent(object):
+
     """The world's simplest agent!"""
+    action_number = 0
+    elf_color1 = [181, 83, 40]
+    elf_color2 = [45, 50, 184]
+    elf_possible_colors = [elf_color1, elf_color2]
+    centipede_color1 = [184, 70, 162]
+    centipede_color2 = [184, 50, 50]
+    centipede_possible_colors = [centipede_color1, centipede_color2]
 
     def __init__(self, action_space):
         self.action_space = action_space
+
+    def get_location(self, img, colors):
+        for color in colors:
+            result = zip(*np.where(img == color)[:2])
+            locations = [x for x in result]
+            if locations:
+                return locations[0]
+            else:
+                return None
+
+
 
     # You should modify this function
     # You may define additional functions in this
@@ -32,31 +51,34 @@ class Agent(object):
         """
         new_array = observation.reshape((observation.shape[0] * observation.shape[1], 3))
         var = {tuple(x) for x in new_array}
-        # target_col = [184, 70, 162]
-        result = zip(*np.where(observation == [181, 83, 40])[:2])
-        locations = [x for x in result]
-        # print(locations)
-        # Sweep through each column and go row by row down to check the largest continuous set of pink pixels.
-        # longest_seq = self.longest_seq_color(locations)
-        # Find the largest labeled region
+        target_col = (184, 70, 162)
+        longest_seq_cent = None
+        result2 = zip(*np.where(observation == [181, 83, 40])[:2])
+        locations2 = [x for x in result2]
+        longest_seq_elf = self.longest_seq_color(locations2)
+        if target_col in var:
+            result = zip(*np.where(observation == [184, 70, 162])[:2])
+            locations = [x for x in result]
+            longest_seq_cent = self.longest_seq_color(locations)
+        centipede_location = self.get_location(longest_seq_cent, self.centipede_possible_colors)
+        elf_location = self.get_location(longest_seq_elf, self.elf_possible_colors,)
+        offset = 0
+        if centipede_location is not None and elf_location is not None:
+            offset = centipede_location[1] - elf_location[1]
+            print(offset)
+        if centipede_location is None and elf_location is None:
+            print("None")
+            return 0
+        if abs(offset) <= 10:
+            return 10
+        else:
+            if offset < 0:
+                return 4
+            else:
+                return 3
 
-        """
-        TEST - got the right elf from the colors
 
-        # Plot the original image
-        plt.subplot(1, 2, 1)
-        plt.imshow(observation)
-        plt.title('Original Image')
-
-        # Plot the largest connected region
-        plt.subplot(1, 2, 2)
-        plt.imshow(longest_seq)
-        plt.title('Largest Connected Region')
-
-        plt.show()
-        """
-
-        return self.action_space.sample()
+        # return self.action_space.sample()
 
     def longest_seq_color(self, locations):
         mask = np.zeros((210, 160), dtype=bool)
