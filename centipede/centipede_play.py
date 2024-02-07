@@ -31,7 +31,6 @@ class Agent(object):
                 return None
 
 
-
     # You should modify this function
     # You may define additional functions in this
     # file or others to support it.
@@ -63,19 +62,19 @@ class Agent(object):
         centipede_location = self.get_location(longest_seq_cent, self.centipede_possible_colors)
         elf_location = self.get_location(longest_seq_elf, self.elf_possible_colors,)
         offset = 0
+
+        self.action_number += 1
+
         if centipede_location is not None and elf_location is not None:
             offset = centipede_location[1] - elf_location[1]
-            print(offset)
-        if centipede_location is None and elf_location is None:
-            print("None")
-            return 0
-        if abs(offset) <= 10:
-            return 10
         else:
-            if offset < 0:
-                return 4
-            else:
-                return 3
+            return 0 # return action number for no-op
+        if self.action_number % 3 == 0:
+            return 10 # return action number for shooting
+        if offset < 0:
+            return 4 # return action number for moving left
+        else:
+            return 3 # return action number for moving right
 
 
         # return self.action_space.sample()
