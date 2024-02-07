@@ -26,7 +26,7 @@ class Agent(object):
             result = zip(*np.where(img == color)[:2])
             locations = [x for x in result]
             if locations:
-                return locations[0]
+                return locations[3]
             else:
                 return None
 
@@ -54,6 +54,8 @@ class Agent(object):
         longest_seq_cent = None
         result2 = zip(*np.where(observation == [181, 83, 40])[:2])
         locations2 = [x for x in result2]
+        if not locations2: 
+            return 0
         longest_seq_elf = self.longest_seq_color(locations2)
         if target_col in var:
             result = zip(*np.where(observation == [184, 70, 162])[:2])
@@ -69,8 +71,8 @@ class Agent(object):
             offset = centipede_location[1] - elf_location[1]
         else:
             return 0 # return action number for no-op
-        if self.action_number % 3 == 0:
-            return 10 # return action number for shooting
+        if self.action_number % 5 == 0:
+            return 1 # return action number for shooting
         if offset < 0:
             return 4 # return action number for moving left
         else:
