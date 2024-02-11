@@ -4,7 +4,6 @@ import pdb
 import gymnasium as gym
 import numpy as np
 from gymnasium import wrappers, logger
-import matplotlib.pyplot as plt
 
 
 class Agent(object):
@@ -24,14 +23,13 @@ class Agent(object):
 
     def get_location(self, img, color):
         """
-        Returns the location of the
-        :param img:
-        :param color:
-        :return:
+        Returns the location of the object to be considered
+        :param img: the image to get the location out off
+        :param color: the particular color of the object in search of
+        :return: a singular point of th object.
         """
         result = zip(*np.where(img == color)[:2])
         locations = [x for x in result]
-        middle_el = len(locations)//2
         if locations:
             return locations[3]
         else:
@@ -77,9 +75,8 @@ class Agent(object):
         centipede_location = self.get_location(longest_seq_cent, centipede_color)  # the actual tuple of the position
         # of the centipede
 
-        elf_location = self.get_location(longest_seq_elf, elf_color) # the actual tuple of the position
+        elf_location = self.get_location(longest_seq_elf, elf_color)  # the actual tuple of the position
         # of the elf
-
 
         self.action_number += 1
 
@@ -96,7 +93,7 @@ class Agent(object):
 
     def longest_seq_color(self, locations):
         """Finds the longest sequence of a particular color in an image given the locations
-           that color is found.
+           that color is found. This code was edited from generative AI
         :param locations: The indexes a particular color is found at.
         :return: An observation that is just the longest sequence of a color against a black backdrop.
 
@@ -124,6 +121,7 @@ class Agent(object):
     def depth_first_search(self, row, col, counter, mask, markers):
         """
         Recursively search for all the connected pixels that are one color and mark them the same integer
+        This code was lifted directly from generative AI.
         :param row: the row of the image currently on in the recursion
         :param col: the col of the image currently on in the recursion
         :param counter: the current int to mark the pixels
