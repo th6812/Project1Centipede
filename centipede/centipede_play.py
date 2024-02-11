@@ -5,6 +5,10 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import wrappers, logger
 
+"""
+Collaborators: Serena Akpoyibo and Terrance Huang
+"""
+
 
 class Agent(object):
     """The world's simplest agent!"""
